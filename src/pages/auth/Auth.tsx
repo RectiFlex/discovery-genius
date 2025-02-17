@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
+import { Shield } from 'lucide-react';
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -33,6 +34,21 @@ export default function Auth() {
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "An error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loginAsAdmin = async () => {
+    setLoading(true);
+    try {
+      await signIn('admin@example.com', 'admin123');
+    } catch (error) {
+      toast({
+        title: "Admin Login Failed",
+        description: "Please make sure you have admin credentials set up in Supabase",
         variant: "destructive",
       });
     } finally {
@@ -95,7 +111,7 @@ export default function Auth() {
             </div>
           </div>
 
-          <div>
+          <div className="space-y-4">
             <Button
               type="submit"
               className="w-full"
@@ -103,6 +119,19 @@ export default function Auth() {
             >
               {loading ? 'Processing...' : isLogin ? 'Sign in' : 'Sign up'}
             </Button>
+
+            {isLogin && (
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full gap-2"
+                onClick={loginAsAdmin}
+                disabled={loading}
+              >
+                <Shield className="h-4 w-4" />
+                Login as Admin
+              </Button>
+            )}
           </div>
         </form>
         <div className="text-center">
