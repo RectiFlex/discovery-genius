@@ -6,6 +6,7 @@ import { AdminNav } from "@/components/admin/AdminNav";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { ProductModeration } from "@/components/admin/ProductModeration";
 import { SpamReports } from "@/components/admin/SpamReports";
+import { UserManagement } from "@/components/admin/UserManagement";
 
 export default function Admin() {
   const { profile, loading } = useAuth();
@@ -41,6 +42,7 @@ export default function Admin() {
       <div className="container mx-auto px-4 py-8">
         <Routes>
           <Route index element={<AdminDashboard />} />
+          <Route path="users" element={<UserManagement />} />
           <Route path="products" element={<ProductModeration />} />
           <Route path="reports" element={<SpamReports />} />
         </Routes>
