@@ -16,7 +16,13 @@ export default function Admin() {
     console.log("Admin page - Current profile:", profile);
     console.log("Admin page - Loading state:", loading);
 
-    if (!loading && profile && !profile.roles.includes('admin')) {
+    if (!loading && !profile) {
+      console.log("Redirecting: User is not authenticated");
+      navigate('/auth');
+      return;
+    }
+
+    if (!loading && profile && !profile.roles?.includes('admin')) {
       console.log("Redirecting: User is not an admin");
       navigate('/');
     }
@@ -32,7 +38,7 @@ export default function Admin() {
   }
 
   // Check if user is authenticated and is an admin
-  if (!profile || !profile.roles.includes('admin')) {
+  if (!profile || !profile.roles?.includes('admin')) {
     return null;
   }
 
