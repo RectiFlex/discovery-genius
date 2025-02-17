@@ -34,6 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Listen for changes on auth state (signed in, signed out, etc.)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session);
       setUser(session?.user ?? null);
       if (session?.user) {
         await fetchProfile(session.user.id);
@@ -41,10 +42,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setProfile(null);
       }
       setLoading(false);
+
+      // Handle signOut event specifically
+      if (event === 'SIGNED_OUT') {
+        setUser(null);
+        setProfile(null);
+        navigate('/auth');
+      }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [navigate]);
 
   async function fetchProfile(userId: string) {
     try {
@@ -93,9 +101,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-    navigate('/auth');
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      // Clear local state
+      setUser(null);
+      setProfile(null);
+      
+      // Navigate to auth page
+      navigate('/auth');
+    } catch (error) {
+      console.error('Error signing out:', error);
+      throw error;
+    }
   };
 
   return (
