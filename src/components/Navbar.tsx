@@ -1,23 +1,42 @@
 
 import { Button } from "@/components/ui/button";
-import { LogIn, Plus } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { LogIn, LogOut, Plus, UserCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export function Navbar() {
+  const { user, profile, signOut } = useAuth();
+
   return (
     <nav className="sticky top-0 z-50 backdrop-blur-lg border-b border-gray-200">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center space-x-8">
-          <h1 className="text-xl font-semibold">ProductHunt</h1>
+          <Link to="/" className="text-xl font-semibold">
+            ProductHunt
+          </Link>
         </div>
         <div className="flex items-center space-x-4">
           <Button variant="outline" className="gap-2">
             <Plus className="h-4 w-4" />
             Submit
           </Button>
-          <Button className="gap-2">
-            <LogIn className="h-4 w-4" />
-            Sign In
-          </Button>
+          {user ? (
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-600">
+                {profile?.full_name || user.email}
+              </span>
+              <Button variant="ghost" size="icon" onClick={signOut}>
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
+          ) : (
+            <Link to="/auth">
+              <Button className="gap-2">
+                <LogIn className="h-4 w-4" />
+                Sign In
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </nav>
