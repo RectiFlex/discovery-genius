@@ -79,12 +79,18 @@ export type Database = {
           created_at: string
           curator_id: string | null
           description: string | null
+          featured: boolean | null
           id: string
           image_url: string | null
           launch_date: string | null
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_notes: string | null
+          moderation_status: string | null
           pricing: string | null
           short_description: string | null
           source_url: string | null
+          spam_score: number | null
           status: string | null
           title: string
           updated_at: string
@@ -95,12 +101,18 @@ export type Database = {
           created_at?: string
           curator_id?: string | null
           description?: string | null
+          featured?: boolean | null
           id?: string
           image_url?: string | null
           launch_date?: string | null
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_notes?: string | null
+          moderation_status?: string | null
           pricing?: string | null
           short_description?: string | null
           source_url?: string | null
+          spam_score?: number | null
           status?: string | null
           title: string
           updated_at?: string
@@ -111,12 +123,18 @@ export type Database = {
           created_at?: string
           curator_id?: string | null
           description?: string | null
+          featured?: boolean | null
           id?: string
           image_url?: string | null
           launch_date?: string | null
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_notes?: string | null
+          moderation_status?: string | null
           pricing?: string | null
           short_description?: string | null
           source_url?: string | null
+          spam_score?: number | null
           status?: string | null
           title?: string
           updated_at?: string
@@ -186,6 +204,47 @@ export type Database = {
           url?: string
         }
         Relationships: []
+      }
+      spam_reports: {
+        Row: {
+          created_at: string | null
+          id: string
+          product_id: string | null
+          reason: string
+          reporter_id: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          product_id?: string | null
+          reason: string
+          reporter_id?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          product_id?: string | null
+          reason?: string
+          reporter_id?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "spam_reports_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {

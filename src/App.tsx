@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/auth/Auth";
 import Verify from "./pages/auth/Verify";
 import NotFound from "./pages/NotFound";
+import Admin from "./pages/admin/Admin";
 
 const queryClient = new QueryClient();
 
@@ -17,6 +18,7 @@ const AppRoutes = () => (
     <Route path="/" element={<Index />} />
     <Route path="/auth" element={<Auth />} />
     <Route path="/auth/verify" element={<Verify />} />
+    <Route path="/admin/*" element={<Admin />} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );
