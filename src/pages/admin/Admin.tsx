@@ -8,16 +8,30 @@ import { ProductModeration } from "@/components/admin/ProductModeration";
 import { SpamReports } from "@/components/admin/SpamReports";
 
 export default function Admin() {
-  const { profile } = useAuth();
+  const { profile, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (profile && !profile.roles.some(role => ['admin', 'curator'].includes(role))) {
+    console.log("Admin page - Current profile:", profile);
+    console.log("Admin page - Loading state:", loading);
+
+    if (!loading && profile && !profile.roles.includes('admin')) {
+      console.log("Redirecting: User is not an admin");
       navigate('/');
     }
-  }, [profile, navigate]);
+  }, [profile, loading, navigate]);
 
-  if (!profile || !profile.roles.some(role => ['admin', 'curator'].includes(role))) {
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
+
+  // Check if user is authenticated and is an admin
+  if (!profile || !profile.roles.includes('admin')) {
     return null;
   }
 
