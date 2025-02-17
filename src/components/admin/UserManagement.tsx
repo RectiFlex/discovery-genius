@@ -8,25 +8,41 @@ interface Profile {
   full_name: string | null;
   username: string | null;
   avatar_url: string | null;
-  user_roles?: { role: string }[];
+  user_roles: { role: string }[];
 }
 
 export function UserManagement() {
   const { data: users, isLoading } = useQuery<Profile[]>({
     queryKey: ['admin-users'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // First get all profiles
+      const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
         .select(`
           id,
           full_name,
           username,
-          avatar_url,
-          user_roles:user_roles(role)
+          avatar_url
         `);
       
-      if (error) throw error;
-      return data || [];
+      if (profilesError) throw profilesError;
+      
+      // Then get their roles
+      const { data: rolesData, error: rolesError } = await supabase
+        .from('user_roles')
+        .select('user_id, role');
+        
+      if (rolesError) throw rolesError;
+
+      // Combine the data
+      const usersWithRoles = profiles.map(profile => ({
+        ...profile,
+        user_roles: rolesData
+          .filter(role => role.user_id === profile.id)
+          .map(role => ({ role: role.role }))
+      }));
+
+      return usersWithRoles;
     },
   });
 
