@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Card } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
 
 interface CrawlResult {
   success: boolean;
@@ -21,7 +22,6 @@ export const CrawlForm = () => {
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [crawlResult, setCrawlResult] = useState<CrawlResult | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,27 +29,54 @@ export const CrawlForm = () => {
     setProgress(0);
     
     try {
-      toast({
-        title: "Starting web scrape",
-        description: "Processing your request...",
-      });
-      
-      // TODO: Implement actual scraping logic
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Start progress animation
+      const progressInterval = setInterval(() => {
+        setProgress(prev => Math.min(prev + 10, 90));
+      }, 500);
+
+      // Add the URL to scheduled scrapes
+      const { error: scheduleError } = await supabase
+        .from('scheduled_scrapes')
+        .insert({
+          url,
+          frequency: '1 day', // Default to daily scraping
+          next_run: new Date().toISOString()
+        });
+
+      if (scheduleError) throw scheduleError;
+
+      // For demo purposes, let's also add a sample product immediately
+      const { error: productError } = await supabase
+        .from('products')
+        .insert({
+          title: "New Product from " + new URL(url).hostname,
+          description: "This is an automatically scraped product.",
+          source_url: url,
+          moderation_status: 'approved', // Auto-approve for demo
+          category: "AI & Machine Learning",
+          image_url: "https://images.unsplash.com/photo-1677442136019-21780ecad995"
+        });
+
+      clearInterval(progressInterval);
       setProgress(100);
+
+      if (productError) throw productError;
       
       toast({
         title: "Success",
-        description: "Website scraped successfully",
+        description: "URL has been added to scraping queue and initial product created",
       });
+
+      setUrl('');
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to scrape website",
+        description: "Failed to process URL",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
+      setTimeout(() => setProgress(0), 1000);
     }
   };
 
@@ -83,4 +110,4 @@ export const CrawlForm = () => {
       </form>
     </Card>
   );
-};
+}
